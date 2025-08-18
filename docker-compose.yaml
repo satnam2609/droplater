@@ -1,0 +1,58 @@
+version: "1.0"
+services:
+  # admin:
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/pinsaar
+      - TOKEN=1fd03fbad85c26e557e044724fb281f0
+
+  worker:
+    build:
+      context: ./worker
+      dockerfile: Dockerfile
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/pinsaar
+      - REDIS_URL=redis://redis:6379
+    depends_on:
+      - redis
+
+  # sink:
+  mongo:
+    image: mongo:latest
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+  redis:
+    image: redis:latest
+    ports:
+      - "6379:6379"
+
+  sink:
+    build:
+      context: ./sink
+      dockerfile: Dockerfile
+    ports: 
+      - "4000:4000"
+    environment:
+      - PORT=4000
+      - REDIS_URL=redis://redis:6379
+
+  admin:
+    build:
+      context: ./admin
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_BASE=http://localhost:8000
+      - NEXT_PUBLIC_TOKEN=1fd03fbad85c26e557e044724fb281f0     
+
+volumes:
+  mongo-data:

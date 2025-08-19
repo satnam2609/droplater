@@ -70,18 +70,22 @@ exports.getNote = async (req, res) => {
 
 exports.replayNote = async (req, res) => {
   try {
-    const id=req.params.id;
-    console.log('Id: ',id);
-    await Note.findOneAndUpdate({
-      _id:new Object(id)
-    },{
-      $set:{
-        status:"Pending"
+    const id = req.params.id;
+    console.log("Id: ", id);
+    await Note.findOneAndUpdate(
+      {
+        _id: new Object(id),
+      },
+      {
+        $set: {
+          status: "Pending",
+        },
+      },
+      {
+        new: true,
       }
-    },{
-      new:true
-    });
-    return res.status(201).json({message:"Replayed"})
+    );
+    return res.status(201).json({ message: "Replayed" });
   } catch (error) {
     console.log(error);
     return res.status(500).json({

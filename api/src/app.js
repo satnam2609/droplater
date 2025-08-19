@@ -14,7 +14,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
 app.use(morgan("dev"));
 
-const uri = process.env.MONGO_URI;
+const uri = process.env.MONGO_URI || "mongodb://mongo:27017/pinsaar";
 
 if (!uri) {
   console.log("Please provide the URI as the environment variable");
@@ -43,8 +43,5 @@ app.use("/health", (_req, res) => {
 fs.readdirSync("./src/routes").map((r) =>
   app.use("/api", require("./routes/" + r))
 );
-const port = 8000;
 
-app.listen(port, () =>
-  console.log(`Server is running at http://localhost:${port}...`)
-);
+module.exports = app;
